@@ -54,7 +54,7 @@ public class FovUnlockClient implements ClientModInitializer {
                     String message = overrideActive
                             ? "FOV override ON (" + config.customFov + ")"
                             : "FOV override OFF";
-                    client.player.displayClientMessage(Component.literal(message), true);
+                    client.player.sendSystemMessage(Component.literal(message));
                 }
             }
         });
