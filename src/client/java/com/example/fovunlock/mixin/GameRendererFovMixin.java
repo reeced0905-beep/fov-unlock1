@@ -35,18 +35,30 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * maintained for 1.21.10 today. That makes it a far more stable injection
  * point than whatever consumes its result.
  *
- * ONE THING TO DOUBLE-CHECK: getFov's return type has been `float` in every
- * recent (1.21.x) mapping, but was `double` in older versions. If Minecraft
- * 26.1.2 still returns double, swap every `Float`/`float` marked below for
- * `Double`/`double` (see the commented block at the bottom). You can confirm
- * in about 10 seconds at https://mcsrc.dev - pick 26.1.2, open
+ * UPDATE: targeting the exact descriptor "getFov(Camera,float,boolean):float"
+ * failed on 26.1.2 - Mixin reported no method matching that exact signature.
+ * The name "getFov" may still be correct while the parameter list or return
+ * type changed (e.g. a raw float tick delta getting replaced by a
+ * RenderTickCounter object, which happened to several other methods on this
+ * class around 1.21.6-1.21.11).
+ *
+ * So below we target the method by NAME ONLY (no descriptor). Mixin will then
+ * resolve whichever "getFov" overload actually exists, as long as there's
+ * only one. If our handler method's parameter types below still don't match
+ * the real ones, the next crash log will spell out the actual expected
+ * signature explicitly (rather than just "0 targets found") - paste that back
+ * and the fix becomes a one-line change instead of another guess.
+ *
+ * You can also just check directly and skip the guessing entirely: go to
+ * https://mcsrc.dev, pick 26.1.2, open
  * net/minecraft/client/renderer/GameRenderer.java, and search for "getFov".
+ * That takes about 30 seconds and tells us the exact real signature.
  */
 @Mixin(GameRenderer.class)
 public class GameRendererFovMixin {
 
     @Inject(
-            method = "getFov(Lnet/minecraft/client/Camera;FZ)F",
+            method = "getFov",
             at = @At("RETURN"),
             cancellable = true
     )
@@ -56,11 +68,11 @@ public class GameRendererFovMixin {
     }
 
     /*
-     * If mcsrc.dev shows getFov returning `double` instead of `float` on
-     * 26.1.2, delete the method above and use this one instead:
+     * If mcsrc.dev (or the next crash log) shows getFov returning `double`
+     * instead of `float`, delete the method above and use this one instead:
      *
      * @Inject(
-     *         method = "getFov(Lnet/minecraft/client/Camera;FZ)D",
+     *         method = "getFov",
      *         at = @At("RETURN"),
      *         cancellable = true
      * )
@@ -68,5 +80,9 @@ public class GameRendererFovMixin {
      *                                     CallbackInfoReturnable<Double> cir) {
      *     cir.setReturnValue((double) FovUnlockClient.getEffectiveFov((float) cir.getReturnValueD()));
      * }
+     *
+     * If the crash log instead shows a completely different parameter list
+     * (e.g. a RenderTickCounter instead of a raw float), paste that log back
+     * and I'll match the handler method to it exactly.
      */
 }
