@@ -3,7 +3,7 @@ package com.example.fovunlock;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -64,8 +64,8 @@ public class FovUnlockClient implements ClientModInitializer {
 
     private void registerCommand() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-                dispatcher.register(ClientCommandManager.literal("fov")
-                        .then(ClientCommandManager.argument(
+                dispatcher.register(ClientCommands.literal("fov")
+                        .then(ClientCommands.argument(
                                         "value",
                                         IntegerArgumentType.integer(FovConfig.MIN_FOV, FovConfig.MAX_FOV))
                                 .executes(context -> {
