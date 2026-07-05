@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "fovunlock",
+  "version": "${version}",
+  "name": "FOV Unlock",
+  "description": "Adds a rebindable key to instantly switch to a custom field of view beyond the vanilla 110 limit.",
+  "authors": [
+    "You"
+  ],
+  "contact": {},
+  "license": "CC0-1.0",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.example.fovunlock.FovUnlockClient"
+    ]
+  },
+  "mixins": [
+    "fovunlock.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "26.1.2",
+    "fabric-api": "*"
+  }
+}
